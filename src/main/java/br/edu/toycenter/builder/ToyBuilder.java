@@ -7,14 +7,14 @@ import br.edu.toycenter.model.Category;
 import br.edu.toycenter.model.Toy;
 
 public class ToyBuilder {
-	private static Toy toy;
+	private Toy toy;
 	
-	private ToyBuilder() {
+	public ToyBuilder() {
 	}
 	
-	public static ToyBuilder builder() {
+	public ToyBuilder builder() {
 		toy = new Toy();
-		return new ToyBuilder();
+		return this;
 	}
 	
 	public ToyBuilder id(Integer id) {

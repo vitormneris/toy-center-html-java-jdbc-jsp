@@ -13,10 +13,6 @@ public class LoginDAO {
 	private Connection conn; 
 	private PreparedStatement ps; 
 	private ResultSet rs;
-
-	public LoginDAO() {
-		conn = ConnectionFactory.getConnection();
-	}
 	
 	private void openConnection() {
 		conn = ConnectionFactory.getConnection();
@@ -28,7 +24,7 @@ public class LoginDAO {
 			ps = conn.prepareStatement("SELECT user_email, user_password FROM user_table");
 			rs = ps.executeQuery();
 	
-			while(rs.next()) {
+			while (rs.next()) {
 				String emailDB = rs.getString("user_email");
 				String passwordDB = rs.getString("user_password");
 				if (emailDB.equals(email)) 

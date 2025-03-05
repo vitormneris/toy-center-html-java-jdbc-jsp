@@ -19,10 +19,6 @@ public class ToyDAO {
 	private Connection conn; 
 	private PreparedStatement ps; 
 	private ResultSet rs; 
-
-	public ToyDAO() {
-		conn = ConnectionFactory.getConnection();
-	}
 	
 	private void openConnection() {
 		conn = ConnectionFactory.getConnection();
@@ -30,6 +26,7 @@ public class ToyDAO {
 	
 	public List<Toy> findAll() {
 		List<Toy> toyList = new ArrayList<>();
+		ToyBuilder toyBuilder = new ToyBuilder();
 
 		try {
 			openConnection();
@@ -37,7 +34,7 @@ public class ToyDAO {
 			rs = ps.executeQuery();
 
 			while (rs.next()) {			
-				Toy toy = ToyBuilder.builder()
+				Toy toy = toyBuilder.builder()
 						.id(rs.getInt("toy_code"))
 						.image(rs.getString("toy_image"))
 						.name(rs.getString("toy_name"))
@@ -61,7 +58,8 @@ public class ToyDAO {
 	
 	public Toy findById(Integer toyId) {
 		Toy toy = new Toy();
-		
+		ToyBuilder toyBuilder = new ToyBuilder();
+
 		try {
 			openConnection();
 			ps = conn.prepareStatement("SELECT * FROM toy_table WHERE toy_code = ?");
@@ -69,7 +67,7 @@ public class ToyDAO {
 			rs = ps.executeQuery();
 
 			if (rs.next()) {			
-				toy = ToyBuilder.builder()
+				toy = toyBuilder.builder()
 						.id(rs.getInt("toy_code"))
 						.image(rs.getString("toy_image"))
 						.name(rs.getString("toy_name"))
@@ -202,11 +200,11 @@ public class ToyDAO {
 	public void delete(Integer toyId) {
 		try {
 			openConnection();
-			ps = conn.prepareStatement("DELETE FROM toy_table WHERE toy_code = ?");
+			ps = conn.prepareStatement("DELETE FROM toy_category WHERE toy_code_fk = ?");
 			ps.setInt(1, toyId);
 			
 			if (ps.executeUpdate() > 0) {
-				ps = conn.prepareStatement("DELETE FROM toy_category WHERE toy_code_fk = ?");
+				ps = conn.prepareStatement("DELETE FROM toy_table WHERE toy_code = ?");
 				ps.setInt(1, toyId);
 				ps.executeUpdate();
 			}

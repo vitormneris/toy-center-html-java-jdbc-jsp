@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.servlet.http.Part;
 
+import br.edu.toycenter.enums.TypeEntityEnum;
 import br.edu.toycenter.exceptions.InvalidFieldException;
 import br.edu.toycenter.model.Category;
 import br.edu.toycenter.model.Toy;
@@ -11,18 +12,12 @@ import br.edu.toycenter.model.User;
 
 public class ValidationFieldService {
 	
-	public static void validationField(Toy toy, Collection<Part> parts) {
+	public static void validationField(Toy toy) {
 		if (toy.getName() == null || toy.getName().trim().equals(""))   
 			throw new InvalidFieldException("O nome nao pode ficar em branco.");
 		
 		if (toy.getBrand() == null || toy.getBrand().trim().equals("")) 
 			throw new InvalidFieldException("A marca nao pode ficar em branco.");
-		
-		boolean isImage = false;
-		for (Part part : parts) 
-			if (part.getName().equals("toy_image") && part.getSize() > 0)
-				isImage = true;		
-		if (!isImage) throw new InvalidFieldException("Envie uma imagem");	
 		
 		if (toy.getPrice() == null)	
 			throw new InvalidFieldException("Digite um valor para o brinquedo.");
@@ -56,14 +51,22 @@ public class ValidationFieldService {
 			throw new InvalidFieldException("A senha nao pode ficar em branco.");
 	}
 	
-	public static void validationField(Category category, Collection<Part> parts) {
+	public static void validationField(Category category) {
 		if (category.getName() == null || category.getName().trim().equals(""))   
-			throw new InvalidFieldException("O nome nao pode ficar em branco.");
-		
-		boolean isImage = false;
-		for (Part part : parts) 
-			if (part.getName().equals("category_image") && part.getSize() > 0)
-				isImage = true;		
-		if (!isImage) throw new InvalidFieldException("Envie uma imagem");		    	
+			throw new InvalidFieldException("O nome nao pode ficar em branco.");	    	
 	}
+	
+	public static void validationField(Collection<Part> parts, TypeEntityEnum entityEnum) {
+		String partName = null;
+		boolean isImage = false;
+
+		if (entityEnum.equals(TypeEntityEnum.TOY)) partName = "toy_image";
+		else if (entityEnum.equals(TypeEntityEnum.CATEGORY)) partName = "category_image";
+	
+		for (Part part : parts) 
+			if (part.getName().equals(partName) && part.getSize() > 0)
+				isImage = true;	
+		if (!isImage) throw new InvalidFieldException("Envie uma imagem");	
+	}
+
 }

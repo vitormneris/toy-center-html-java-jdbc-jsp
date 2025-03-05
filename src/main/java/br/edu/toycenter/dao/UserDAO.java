@@ -17,10 +17,6 @@ public class UserDAO {
 	private Connection conn; 
 	private PreparedStatement ps; 
 	private ResultSet rs;
-
-	public UserDAO() {
-		conn = ConnectionFactory.getConnection();
-	}
 	
 	private void openConnection() {
 		conn = ConnectionFactory.getConnection();

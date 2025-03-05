@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.Part;
 
 import br.edu.toycenter.dao.ToyDAO;
+import br.edu.toycenter.enums.TypeEntityEnum;
 import br.edu.toycenter.model.Toy;
 
 public class ToyService {
@@ -23,15 +24,16 @@ public class ToyService {
 		return toyDAO.findById(toyId);
 	}
 	
-	public void insert(Toy toy, Collection<Part> parts) throws NumberFormatException, Exception {
-		ValidationFieldService.validationField(toy, parts);
-		UploadImageService.uploadImage(parts, null, "toy");
+	public void insert(Toy toy, Collection<Part> parts) {
+		ValidationFieldService.validationField(toy);
+		ValidationFieldService.validationField(parts,  TypeEntityEnum.TOY);
+		UploadImageService.uploadImage(parts, null, toy);
 		toyDAO.insert(toy);
 	}
 	
-	public void update(Integer toyId, Toy toy, Collection<Part> parts) throws NumberFormatException, Exception {
-		ValidationFieldService.validationField(toy, parts);
-		UploadImageService.uploadImage(parts, toyId, "toy");
+	public void update(Integer toyId, Toy toy, Collection<Part> parts) {
+		ValidationFieldService.validationField(toy);
+		UploadImageService.uploadImage(parts, toyId, toy);
 		toyDAO.update(toyId, toy);
 	}
 	

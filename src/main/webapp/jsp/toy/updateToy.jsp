@@ -130,8 +130,7 @@
 
                 </div>
 		
-			<textarea class="detailsBoxAlt" width="1" name="toy_details"  id="details_NT" ></textarea>
-			
+			<textarea class="detailsBoxAlt" id="gambiarra para o textArea abaixo aparecer"></textarea>
 			
 			<div class="fieldsetBox">
 			<label for="details_NT">Detalhes</label>			

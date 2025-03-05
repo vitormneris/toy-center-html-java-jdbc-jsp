@@ -43,6 +43,18 @@ public class ToyServlet extends HttpServlet {
 	    		case "getAllToy":
 					findAll(request, response, false);
 					break;
+	    		case "getOneToy":
+	        		findById(request, response);
+	        		break;
+	    		case "getAllToyAdm":
+					screenBlock(request, response);
+	        		findAll(request, response, true);
+	        		break;
+	    		case "insertToy":
+	    			screenBlock(request, response);
+	        		request.setAttribute("categoryList", categoryService.findAll());
+		            forwardToPage(request, response, "jsp/toy/insertToy.jsp");
+		            break;
 	    		case "updateToy":
 	    			screenBlock(request, response);
 			    	request.setAttribute("categoryList", categoryService.findAll());
@@ -56,18 +68,6 @@ public class ToyServlet extends HttpServlet {
 	        		session.setAttribute("toy", toyService.findById(getIdFromRequest(request)));
 		            forwardToPage(request, response, "jsp/toy/deleteToy.jsp");
 		            break;
-	    		case "insertToy":
-	    			screenBlock(request, response);
-	        		request.setAttribute("categoryList", categoryService.findAll());
-		            forwardToPage(request, response, "jsp/toy/insertToy.jsp");
-		            break;
-	    		case "getOneToy":
-	        		findById(request, response);
-	        		break;
-	    		case "getAllToyAdm":
-					screenBlock(request, response);
-	        		findAll(request, response, true);
-	        		break;
 	    		default:
 	            	request.setAttribute("message", "Page not found");
 	            	forwardToPage(request, response, "jsp/error.jsp");
@@ -151,14 +151,17 @@ public class ToyServlet extends HttpServlet {
 	private Toy createObjectToyFromRequest(HttpServletRequest request) {	
 		String price = request.getParameter("toy_price");
 		String[] categoriesSelected = request.getParameterValues("toy_categories");
+		ToyBuilder toyBuilder = new ToyBuilder();
 		
-		return ToyBuilder.builder()
+		Toy toy = toyBuilder.builder()
 				.name(request.getParameter("toy_name"))
 				.brand(request.getParameter("toy_brand"))
 				.price(price == null || price.equals("") ? BigDecimal.ZERO : BigDecimal.valueOf(Double.parseDouble(price)))
 				.description(request.getParameter("toy_description"))
 				.details(request.getParameter("toy_details"))
 				.categories(getCategoriesSelecteds(categoriesSelected == null ? new String[] {} :  categoriesSelected)).build();
+		
+		return toy;
 	}
 	
 	private Integer getIdFromRequest(HttpServletRequest request) {

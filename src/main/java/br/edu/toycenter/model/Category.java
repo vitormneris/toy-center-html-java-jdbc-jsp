@@ -2,7 +2,7 @@ package br.edu.toycenter.model;
 
 import java.util.List;
 
-public class Category {
+public class Category implements EntityWithImage {
 	private Integer id;
 	private String name;
 	private String image;
@@ -32,6 +32,7 @@ public class Category {
 		return image;
 	}
 
+	@Override
 	public void setImage(String image) {
 		this.image = image;
 	}

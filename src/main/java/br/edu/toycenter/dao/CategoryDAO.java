@@ -13,16 +13,12 @@ import br.edu.toycenter.enums.RuntimeErrorEnum;
 import br.edu.toycenter.exceptions.DatabaseException;
 import br.edu.toycenter.model.Category;
 import br.edu.toycenter.model.Toy;
-import br.edu.toycenter.model.ToyCategory;
 import br.edu.toycenter.util.ConnectionFactory;
 
 public class CategoryDAO {
 	private Connection conn; 
 	private PreparedStatement ps; 
 	private ResultSet rs; 
-
-	public CategoryDAO() {
-	}
 	
 	private void openConnection() {
 		conn = ConnectionFactory.getConnection();
@@ -82,7 +78,8 @@ public class CategoryDAO {
 	
 	public List<Toy> getToysByCategoryId(Integer categoryId) {
 		List<Toy> toys = new ArrayList<>();
-		
+		ToyBuilder toyBuilder = new ToyBuilder();
+
 		try {
 			String querySql = "SELECT DISTINCT t.toy_code, t.toy_image, t.toy_name, t.toy_brand, t.toy_price, t.toy_description, t.toy_details "
 					     + "FROM toy_table t " 
@@ -94,7 +91,7 @@ public class CategoryDAO {
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
-				Toy toy = ToyBuilder.builder()
+				Toy toy = toyBuilder.builder()
 						.id(rs.getInt("toy_code"))
 						.image(rs.getString("toy_image"))
 						.name(rs.getString("toy_name"))
@@ -114,7 +111,7 @@ public class CategoryDAO {
 	}
 
 	public void insert(Category category) {
-		try {			
+		try {
 			openConnection();
 			ps = conn.prepareStatement("INSERT INTO category_table (category_name, category_image) VALUES (?, ?)");	
 			ps.setString(1, category.getName());
@@ -146,26 +143,18 @@ public class CategoryDAO {
 	
 	public void delete(Integer categoryId) {
 		ToyDAO toyDAO = new ToyDAO();
+		
 		try {		
 			openConnection();
-
-			boolean status = false;
-			for (ToyCategory toyCategoryRegisters : findAllToyCategoryRegisters()) {
-				if (toyCategoryRegisters.getCategoryId() == categoryId) {
-					status = true;
-					break;
-				}
-			}
 			
-			if (status) {	
-				ps = conn.prepareStatement("DELETE FROM toy_category WHERE category_code_fk = ?");
-				ps.setInt(1, categoryId);
-				ps.executeUpdate();
-				
-				for (Toy toy : toyDAO.findAll()) 
-					if (toy.getCategories().size() == 0) 
-						toyDAO.delete(toy.getId());
-			}
+			ps = conn.prepareStatement("DELETE FROM toy_category WHERE category_code_fk = ?");
+			ps.setInt(1, categoryId);
+			ps.executeUpdate();
+			
+			for (Toy toy : toyDAO.findAll()) 
+				if (toy.getCategories().size() == 0) 
+					toyDAO.delete(toy.getId());
+			
 			
 			ps = conn.prepareStatement("DELETE FROM category_table WHERE category_code = ?");
 			ps.setInt(1, categoryId);
@@ -174,25 +163,6 @@ public class CategoryDAO {
 			throw new DatabaseException(RuntimeErrorEnum.ERR0006);
 		} finally {
 			ConnectionFactory.closeConnection(conn, ps);
-		}
-	}
-	
-	public List<ToyCategory> findAllToyCategoryRegisters() {
-		List<ToyCategory> listToyCategoryRegisters = new ArrayList<>();
-
-		try {
-			openConnection();
-			ps = conn.prepareStatement("SELECT * FROM toy_category");
-			rs = ps.executeQuery();
-
-			while (rs.next()) 
-				listToyCategoryRegisters.add(new ToyCategory(rs.getInt("toy_code_fk"), rs.getInt("category_code_fk")));
-			
-			return listToyCategoryRegisters;
-		} catch (SQLException e) {
-			throw new DatabaseException(RuntimeErrorEnum.ERR0003);
-		}  finally {
-			ConnectionFactory.closeConnection(conn, ps, rs);
 		}
 	}
 }

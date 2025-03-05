@@ -23,8 +23,9 @@
     <header>
 		<nav class="nav-logo">
 			<div class="logo">
-				<a href="ToyController?action=getAllToy"> <img
-					src="image/logoToyCenterAlt.svg" alt=""></a>
+				<a href="ToyController?action=getAllToy"> 
+					<img src="image/logoToyCenterAlt.svg" alt="">
+				</a>
 			</div>
 
 			<div class="store-name">
@@ -69,27 +70,24 @@
 			enctype="multipart/form-data">
 			<input type="hidden" name="action" value="insertToy">
 
-    <div class="title-container">
-        <h1 class="titleAlt">Catálogo de Brinquedos: Novo Brinquedo</h1>
-        <div class="title-lineAlt" align="center" ></div>
-    </div>
+		    <div class="title-container">
+		        <h1 class="titleAlt">Catálogo de Brinquedos: Novo Brinquedo</h1>
+		        <div class="title-lineAlt" align="center" ></div>
+		    </div>
 
 			<div class="fieldsetBox">
-				<label for="name_NT">Nome</label> <input type="text"
-					placeholder="Digite o Nome do Brinquedo" name="toy_name"
-					id="name_NT" required>
+				<label for="name_NT">Nome</label> 
+				<input type="text" placeholder="Digite o Nome do Brinquedo" name="toy_name" id="name_NT" required>
 			</div>
 
 			<div class="fieldsetBox">
-				<label for="brand_NT">Marca</label> <input type="text"
-					placeholder="Digite o nome da Marca do Brinquedo" name="toy_brand"
-					id="brand_NT" required>
+				<label for="brand_NT">Marca</label> 
+				<input type="text" placeholder="Digite o nome da Marca do Brinquedo" name="toy_brand" id="brand_NT" required>
 			</div>
 
 			<div class="fieldsetBox">
-				<label for="description_NT">Descrição</label> <input type="text"
-					placeholder="Digite a Descrição do Brinquedo"
-					name="toy_description" id="description_NT" required>
+				<label for="description_NT">Descrição</label> 
+				<input type="text" placeholder="Digite a Descrição do Brinquedo" name="toy_description" id="description_NT" required>
 			</div>
 
 			<div class="fieldsetImageBox">
@@ -98,9 +96,8 @@
 			</div>
 
 			<div class="fieldsetPriceBox">
-				<label for="price_NT">Valor R$</label> <input type="number" min="0"
-					max="1000000000" step="0.01" placeholder="Digite o Valor"
-					class="price_nt" name="toy_price" id="price_NT" required>
+				<label for="price_NT">Valor R$</label> 
+				<input type="number" min="0" max="1000000000" step="0.01" placeholder="Digite o Valor" class="price_nt" name="toy_price" id="price_NT" required>
 			</div>
 
 			<div >
@@ -112,7 +109,7 @@
 			    %>
 			    	<option value="<%=category.getId()%>"> <%=category.getName()%></option>
 			    <%
-			    }
+			    	}
 			    %>
 			    </select>
           
@@ -130,8 +127,7 @@
 			<br>
 			<p>
 				<%
-				if (!(message == null))
-					out.print(message);
+				if (!(message == null)) out.print(message);
 				%>
 			</p>
 

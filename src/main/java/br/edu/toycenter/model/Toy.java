@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Toy {
+public class Toy implements EntityWithImage {
 	private Integer id;
 	private String image;
 	private String name;
@@ -30,6 +30,7 @@ public class Toy {
 		return image;
 	}
 
+	@Override
 	public void setImage(String image) {
 		this.image = image;
 	}
