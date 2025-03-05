@@ -63,16 +63,16 @@
             <h1 class="cadastro_title">Atualizar usuário</h1>
             
             <label for="code">Code</label>
-			<input type="number" size="10" name="user_code" id="code" value="<%=user.getUserCode()%>" readonly="readonly" required>
+			<input type="number" size="10" name="user_code" id="code" value="<%=user.getId()%>" readonly="readonly" required>
 			
             <label for="nome">Nome</label>
-            <input type="text" name="user_name" id="nome" value="<%=user.getUserName()%>" placeholder="Type a name" required>
+            <input type="text" name="user_name" id="nome" value="<%=user.getName()%>" placeholder="Type a name" required>
 
             <label for="email">Email:</label>
-            <input type="email" name="user_email" id="email" value="<%=user.getUserEmail()%>" placeholder="Type a e-mail" required>
+            <input type="email" name="user_email" id="email" value="<%=user.getEmail()%>" placeholder="Type a e-mail" required>
 
             <label for="senha">Senha:</label>
-            <input type="password" name="user_password" id="senha" value="<%=user.getUserPassword()%>" placeholder="Type a password" required>
+            <input type="password" name="user_password" id="senha" value="<%=user.getPassword()%>" placeholder="Type a password" required>
 
 			<div class="centralize">
 			    <button id="confirmBtn" onclick="confirmSubmission()">Salvar</button>

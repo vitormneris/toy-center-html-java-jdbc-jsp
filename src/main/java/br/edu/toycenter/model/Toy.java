@@ -1,126 +1,84 @@
 package br.edu.toycenter.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Toy {
-	private int toyCode;
-	private String toyImage;
-	private String toyName;
-	private String toyBrand;
-	private float toyPrice;
-	private String toyDescription;
-	private String toyDetails;
+	private Integer id;
+	private String image;
+	private String name;
+	private String brand;
+	private BigDecimal price;
+	private String description;
+	private String details;
 	
-	private List<Category> toyCategories = new ArrayList<>();
-
+	private List<Category> categories = new ArrayList<>();
+	
 	public Toy() {
-		super();
-	}
-	
-	public Toy(int toyCode) {
-		super();
-		this.toyCode = toyCode;
 	}
 
-	public Toy(int toyCode, String toyImage, String toyName, String toyBrand, float toyPrice,
-			String toyDescription, String toyDetails) {
-		super();
-		this.toyCode = toyCode;
-		this.toyImage = toyImage;
-		this.toyName = toyName;
-		this.toyBrand = toyBrand;
-		this.toyPrice = toyPrice;
-		this.toyDescription = toyDescription;
-		this.toyDetails = toyDetails;
-	}
-	
-	public Toy(int toyCode, String toyImage, String toyName, String toyBrand, float toyPrice,
-			String toyDescription, String toyDetails, List<Category> toyCategories) {
-		super();
-		this.toyCode = toyCode;
-		this.toyImage = toyImage;
-		this.toyName = toyName;
-		this.toyBrand = toyBrand;
-		this.toyPrice = toyPrice;
-		this.toyDescription = toyDescription;
-		this.toyDetails = toyDetails;
-		this.toyCategories = toyCategories;
+	public Integer getId() {
+		return id;
 	}
 
-	public int getToyCode() {
-		return toyCode;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
-	public void setToyCode(int toyCode) {
-		this.toyCode = toyCode;
+	public String getImage() {
+		return image;
 	}
 
-	public String getToyImage() {
-		return toyImage;
+	public void setImage(String image) {
+		this.image = image;
 	}
 
-	public void setToyImage(String toyImage) {
-		this.toyImage = toyImage;
+	public String getName() {
+		return name;
 	}
 
-	public String getToyName() {
-		return toyName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setToyName(String toyName) {
-		this.toyName = toyName;
+	public String getBrand() {
+		return brand;
 	}
 
-	public String getToyBrand() {
-		return toyBrand;
+	public void setBrand(String brand) {
+		this.brand = brand;
 	}
 
-	public void setToyBrand(String toyBrand) {
-		this.toyBrand = toyBrand;
+	public BigDecimal getPrice() {
+		return price;
 	}
 
-	public float getToyPrice() {
-		return toyPrice;
+	public void setPrice(BigDecimal price) {
+		this.price = price;
 	}
 
-	public void setToyPrice(float toyPrice) {
-		this.toyPrice = toyPrice;
+	public String getDescription() {
+		return description;
 	}
 
-	public String getToyDescription() {
-		return toyDescription;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	public void setToyDescription(String toyDescription) {
-		this.toyDescription = toyDescription;
+	public String getDetails() {
+		return details;
 	}
 
-	public String getToyDetails() {
-		return toyDetails;
+	public void setDetails(String details) {
+		this.details = details;
 	}
 
-	public void setToyDetails(String toyDetails) {
-		this.toyDetails = toyDetails;
+	public List<Category> getCategories() {
+		return categories;
 	}
 
-	public List<Category> getToyCategories() {
-		return toyCategories;
-	}
-	
-	public void addCategory(Category category) {
-		toyCategories.add(category);
-	}
-	
-	public boolean typeVerify(Object obj) {
-		if (obj instanceof Toy) return true;
-		return false;
-	}
-
-	@Override
-	public String toString() {
-		return "Toy [toyCode=" + toyCode + ", toyImage=" + toyImage + ", toyName=" + toyName + ", toyBrand=" + toyBrand
-				+ ", toyPrice=" + toyPrice + ", toyDescription=" + toyDescription + ", toyDetails=" + toyDetails
-				+ ", categories=" + toyCategories + "]";
-	}
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
+	}	
 }

@@ -64,20 +64,20 @@
             <div class="fieldsetBox">
                 <label for="code_EC">Code</label>
                 <input type="number" placeholder="Digite o Código da Categoria" name="category_code"
-                    id="code_EC" value="<%=category.getCategoryCode()%>" readonly="readonly" required>
+                    id="code_EC" value="<%=category.getId()%>" readonly="readonly" required>
             </div>
 
             <div class="fieldsetBox">
                 <label for="name_EC">Nome</label>
                 <input type="text" placeholder="Digite o Novo Nome da Categoria" name="category_name" id="name_EC" 
-                value="<%=category.getCategoryName()%>" required>
+                value="<%=category.getName()%>" required>
             </div>
 
 
             <div class="fieldsetImageBox">
                 <label for="file_EC">Imagem</label>
                 <input type="file" name="category_image" id="file_EC">
-                <img class="img_show" src="<%=category.getCategoryImage()%>"> <br> 
+                <img class="img_show" src="<%=category.getImage()%>"> <br> 
             </div>
 
 			<div class="centralize">

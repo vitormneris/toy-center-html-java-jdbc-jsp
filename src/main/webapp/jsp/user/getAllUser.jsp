@@ -84,15 +84,15 @@
 								<%
 								}
 								%>
-								<td><%=user.getUserCode()%></td>
-								<td class="toy-compact-cell"><%=user.getUserName()%></td>
-								<td class="toy-compact-cell"><%=user.getUserEmail()%></td>
-								<td class="toy-compact-cell"><%=user.getUserPassword()%></td>
+								<td><%=user.getId()%></td>
+								<td class="toy-compact-cell"><%=user.getName()%></td>
+								<td class="toy-compact-cell"><%=user.getEmail()%></td>
+								<td class="toy-compact-cell"><%=user.getPassword()%></td>
 
 								<td class="controls"><a class="linkDelete"
-									onclick="deleteUser(<%=user.getUserCode()%>)">Deletar</a> <a
+									onclick="deleteUser(<%=user.getId()%>)">Deletar</a> <a
 									class="linkEdit"
-									href="UserController?action=updateUser&user_code=<%=user.getUserCode()%>">Atualizar</a>
+									href="UserController?action=updateUser&user_code=<%=user.getId()%>">Atualizar</a>
 								</td>
 							</tr>
 							<%

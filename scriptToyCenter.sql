@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS toy_center;
-USE toy_center;
+CREATE DATABASE IF NOT EXISTS toycenter_db;
+USE toycenter_db;
 
 CREATE TABLE IF NOT EXISTS toy_table (
     toy_code INT AUTO_INCREMENT KEY NOT NULL,

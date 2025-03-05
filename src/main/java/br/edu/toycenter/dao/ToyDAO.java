@@ -7,6 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.edu.toycenter.builder.CategoryBuilder;
+import br.edu.toycenter.builder.ToyBuilder;
+import br.edu.toycenter.enums.RuntimeErrorEnum;
+import br.edu.toycenter.exceptions.DatabaseException;
 import br.edu.toycenter.model.Category;
 import br.edu.toycenter.model.Toy;
 import br.edu.toycenter.util.ConnectionFactory;
@@ -16,207 +20,200 @@ public class ToyDAO {
 	private PreparedStatement ps; 
 	private ResultSet rs; 
 
-	public ToyDAO() throws Exception {
-		try {
-			this.conn = ConnectionFactory.getConnection();
-		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - tente novamente mais tarde.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - tente novamente mais tarde.");
-		}
+	public ToyDAO() {
+		conn = ConnectionFactory.getConnection();
 	}
 	
-	public List<Toy> getAllToy() throws Exception {
+	private void openConnection() {
+		conn = ConnectionFactory.getConnection();
+	}
+	
+	public List<Toy> findAll() {
+		List<Toy> toyList = new ArrayList<>();
+
 		try {
+			openConnection();
 			ps = conn.prepareStatement("SELECT * FROM toy_table");
 			rs = ps.executeQuery();
-			List<Toy> list = new ArrayList<>();
-			ToyCategoryDAO toyCategoryDAO = new ToyCategoryDAO();
-			boolean toyStatus = false;
 
-			while (rs.next()) {
-				int toycode = rs.getInt("toy_code");
-				String image = rs.getString("toy_image");
-				String name = rs.getString("toy_name");
-				String brand = rs.getString("toy_brand");
-				float price = rs.getFloat("toy_price");
-				String description = rs.getString("toy_description");
-				String details = rs.getString("toy_details");
-				Toy toy = new Toy(toycode);
-				list.add(new Toy(toycode, image, name, brand, price, description, details, toyCategoryDAO.getAllCategories(toy)));
-				toyStatus = true;
+			while (rs.next()) {			
+				Toy toy = ToyBuilder.builder()
+						.id(rs.getInt("toy_code"))
+						.image(rs.getString("toy_image"))
+						.name(rs.getString("toy_name"))
+						.brand(rs.getString("toy_brand"))
+						.price(rs.getBigDecimal("toy_price"))
+						.description(rs.getString("toy_description"))
+						.details(rs.getString("toy_details")).build();
+				
+				toy.setCategories(getCategoriesByToyId(toy.getId()));
+				
+				toyList.add(toy);
 			}
 			
-			if (!toyStatus) 
-				return null;
-			return list;
+			return toyList;
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível encontrar os brinquedos.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível encontrar os brinquedos.");
+			throw new DatabaseException(RuntimeErrorEnum.ERR0003);
 		} finally {
 			ConnectionFactory.closeConnection(conn, ps, rs);
 		}
 	}
 	
-	public Toy getOneToy(Toy toy) throws Exception {
+	public Toy findById(Integer toyId) {
+		Toy toy = new Toy();
+		
 		try {
+			openConnection();
 			ps = conn.prepareStatement("SELECT * FROM toy_table WHERE toy_code = ?");
-			ps.setInt(1, toy.getToyCode());
+			ps.setInt(1, toyId);
 			rs = ps.executeQuery();
-			ToyCategoryDAO toyCategoryDAO = new ToyCategoryDAO();
-			boolean toyStatus = false;
 
-			while (rs.next()) {
-				int toycode = rs.getInt("toy_code");
-				String image = rs.getString("toy_image");
-				String name = rs.getString("toy_name");
-				String brand = rs.getString("toy_brand");
-				float price = rs.getFloat("toy_price");
-				String description = rs.getString("toy_description");
-				String details = rs.getString("toy_details");
-				toy = new Toy(toycode, image, name, brand, price, description, details, toyCategoryDAO.getAllCategories(toy));
-				toyStatus = true;
+			if (rs.next()) {			
+				toy = ToyBuilder.builder()
+						.id(rs.getInt("toy_code"))
+						.image(rs.getString("toy_image"))
+						.name(rs.getString("toy_name"))
+						.brand(rs.getString("toy_brand"))
+						.price(rs.getBigDecimal("toy_price"))
+						.description(rs.getString("toy_description"))
+						.details(rs.getString("toy_details")).build();
+				
+				toy.setCategories(getCategoriesByToyId(toy.getId()));
 			}
-			
-			if (!toyStatus) 
-				return null;
+
 			return toy;
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível encontrar o brinquedo.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível encontrar o brinquedo.");
+			throw new DatabaseException(RuntimeErrorEnum.ERR0003);
 		} finally {
 			ConnectionFactory.closeConnection(conn, ps, rs);
 		}
 	}
 	
-	public Toy getLastToy() throws Exception {
-		try {
-			ps = conn.prepareStatement("SELECT * FROM toy_table WHERE toy_code = LAST_INSERT_ID()");
-			rs = ps.executeQuery();
-			Toy toy = null;
-			boolean toyStatus = false;
+	public List<Category> getCategoriesByToyId(Integer toyId) {
+		List<Category> categories = new ArrayList<>();
 
-			while (rs.next()) {
-				int toycode = rs.getInt("toy_code");
-				String image = rs.getString("toy_image");
-				String name = rs.getString("toy_name");
-				String brand = rs.getString("toy_brand");
-				float price = rs.getFloat("toy_price");
-				String description = rs.getString("toy_description");
-				String details = rs.getString("toy_details");
-				toy = new Toy(toycode, image, name, brand, price, description, details);
-				toyStatus = true;
+		try {
+			String querySql = "SELECT DISTINCT c.category_code, c.category_name, c.category_image "
+					+ "FROM category_table c "
+					+ "INNER JOIN toy_category tc ON tc.category_code_fk = c.category_code "
+					+ "INNER JOIN toy_table t ON tc.toy_code_fk = ?;";
+			
+			PreparedStatement ps = conn.prepareStatement(querySql);
+			ps.setInt(1, toyId);
+			ResultSet rs = ps.executeQuery();
+						
+			while (rs.next()) {				
+				Category category = CategoryBuilder.builder()
+						.id(rs.getInt("category_code"))
+						.name(rs.getString("category_name"))
+						.image(rs.getString("category_image")).build();
+				
+				categories.add(category);
 			}
 			
-			if (!toyStatus) 
-				return null;
-			return toy;
+			return categories; 	
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível encontrar o brinquedo." + e.getMessage());
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível encontrar o brinquedo.");
-		} 
+			throw new DatabaseException(RuntimeErrorEnum.ERR0003);
+		} finally {
+			//ConnectionFactory.closeConnection(null, ps, rs);
+		}
 	}
 
-	public Boolean insertToy(Toy toy) throws Exception {
-		if (toy == null)
-			throw new Exception("The value don't can be null");
+	public void insert(Toy toy) {
 		try {
-			ToyCategoryDAO toyCategoryDAO = new ToyCategoryDAO();
-			
-			String SQL = "INSERT INTO toy_table "
+			String querySql = "INSERT INTO toy_table "
 				       + "(toy_image, toy_name, toy_brand, toy_price, toy_description, toy_details) "
 					   + "VALUES(?, ?, ?, ?, ?, ?)";
-			ps = conn.prepareStatement(SQL);
 			
-			ps.setString(1, toy.getToyImage());
-			ps.setString(2, toy.getToyName());
-			ps.setString(3, toy.getToyBrand());
-			ps.setFloat(4, toy.getToyPrice());
-			ps.setString(5, toy.getToyDescription());
-			ps.setString(6, toy.getToyDetails());
+			openConnection();
+			ps = conn.prepareStatement(querySql);
+			ps.setString(1, toy.getImage());
+			ps.setString(2, toy.getName());
+			ps.setString(3, toy.getBrand());
+			ps.setBigDecimal(4, toy.getPrice());
+			ps.setString(5, toy.getDescription());
+			ps.setString(6, toy.getDetails());
 			
 			if (ps.executeUpdate() > 0) {	
-				for (Category category : toy.getToyCategories()) 
-					if (!toyCategoryDAO.toyCategoryInsert(getLastToy(), category)) 
-						return false;
-				return true;
+				for (Category category : toy.getCategories()) {
+					ps = conn.prepareStatement("INSERT INTO toy_category (toy_code_fk, category_code_fk) VALUES (?, ?)");
+					ps.setInt(1, getIdOfLastToyInserted());
+					ps.setInt(2, category.getId());
+					ps.executeUpdate();
+				}
 			} 
-			return false;
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível inserir o brinquedo." + e.getMessage());
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível inserir o brinquedo.");
-		} finally {
+			throw new DatabaseException(RuntimeErrorEnum.ERR0004);
+		}  finally {
 			ConnectionFactory.closeConnection(conn, ps);
 		}
 	}
 	
-	public Boolean updateToy(Toy toy) throws Exception {
-		if (toy == null) {
-			throw new Exception("The value don't can be null");
-		}
+	public Integer getIdOfLastToyInserted() {
 		try {
-			ToyCategoryDAO toyCategoryDAO = new ToyCategoryDAO();
+			PreparedStatement ps = conn.prepareStatement("SELECT toy_code FROM toy_table WHERE toy_code = LAST_INSERT_ID()");
+			ResultSet rs = ps.executeQuery();
 
-			String SQL = "UPDATE toy_table "
+			while (rs.next())
+				return rs.getInt("toy_code");
+		} catch (SQLException e) {
+			throw new DatabaseException(RuntimeErrorEnum.ERR0003);
+		} 
+		return 0;
+	}
+	
+	public void update(Integer toyId, Toy toy) {
+		try {
+
+			String querySql = "UPDATE toy_table "
 				   	   + "SET toy_image = ?, toy_name = ?, toy_brand = ?, toy_price = ?, toy_description = ?, toy_details = ? "
 					   + "WHERE toy_code = ?";
-			ps = conn.prepareStatement(SQL);
 			
-			ps.setString(1, toy.getToyImage());
-			ps.setString(2, toy.getToyName());
-			ps.setString(3, toy.getToyBrand());
-			ps.setFloat(4, toy.getToyPrice());
-			ps.setString(5, toy.getToyDescription());
-			ps.setString(6, toy.getToyDetails());
-			ps.setInt(7, toy.getToyCode());
+			openConnection();
+			ps = conn.prepareStatement(querySql);
+			ps.setString(1, toy.getImage());
+			ps.setString(2, toy.getName());
+			ps.setString(3, toy.getBrand());
+			ps.setBigDecimal(4, toy.getPrice());
+			ps.setString(5, toy.getDescription());
+			ps.setString(6, toy.getDetails());
+			ps.setInt(7, toyId);
 				
 			if (ps.executeUpdate() > 0) {
-				if (toyCategoryDAO.toyCategoryDelete(toy)) {
-					for (Category category : toy.getToyCategories()) 
-						if (!toyCategoryDAO.toyCategoryInsert(toy, category)) 
-							return false;
-					return true;
+				ps = conn.prepareStatement("DELETE FROM toy_category WHERE toy_code_fk = ?");
+				ps.setInt(1, toyId);
+				
+				if (ps.executeUpdate() > 0) {
+					for (Category category : toy.getCategories()) {
+						ps = conn.prepareStatement("INSERT INTO toy_category (toy_code_fk, category_code_fk) VALUES (?, ?)");
+						ps.setInt(1, toyId);
+						ps.setInt(2, category.getId());
+						ps.executeUpdate();
+					}
 				}
 			}
-			return false;
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível atualizar o brinquedo.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível atualizar o brinquedo.");
-		} finally {
+			throw new DatabaseException(RuntimeErrorEnum.ERR0005);
+		}  finally {
 			ConnectionFactory.closeConnection(conn, ps);
 		}
 	}
 	
-	public Boolean deleteToy(Toy toy, boolean toyCategory) throws Exception {
+	public void delete(Integer toyId) {
 		try {
-			if (toyCategory) {
-				ToyCategoryDAO toyCategoryDAO = new ToyCategoryDAO();
-				if (!toyCategoryDAO.toyCategoryDelete(toy)) throw new SQLException("SQL error: ");
-			}
-			
-			String SQL = "DELETE FROM toy_table WHERE toy_code = ?";
-
-			ps = conn.prepareStatement(SQL);
-
-			ps.setInt(1, toy.getToyCode());
+			openConnection();
+			ps = conn.prepareStatement("DELETE FROM toy_table WHERE toy_code = ?");
+			ps.setInt(1, toyId);
 			
 			if (ps.executeUpdate() > 0) {
-				return true;
+				ps = conn.prepareStatement("DELETE FROM toy_category WHERE toy_code_fk = ?");
+				ps.setInt(1, toyId);
+				ps.executeUpdate();
 			}
-			return false;
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível deletar o brinquedo.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível deletar o brinquedo.");
+			throw new DatabaseException(RuntimeErrorEnum.ERR0006);
 		} finally {
-			if (toyCategory) {
-				ConnectionFactory.closeConnection(conn, ps);
-			}
+			ConnectionFactory.closeConnection(conn, ps);
 		}
 	}
 }

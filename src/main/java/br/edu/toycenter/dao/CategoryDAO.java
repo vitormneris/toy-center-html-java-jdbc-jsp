@@ -7,7 +7,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.edu.toycenter.builder.CategoryBuilder;
+import br.edu.toycenter.builder.ToyBuilder;
+import br.edu.toycenter.enums.RuntimeErrorEnum;
+import br.edu.toycenter.exceptions.DatabaseException;
 import br.edu.toycenter.model.Category;
+import br.edu.toycenter.model.Toy;
 import br.edu.toycenter.model.ToyCategory;
 import br.edu.toycenter.util.ConnectionFactory;
 
@@ -16,169 +21,178 @@ public class CategoryDAO {
 	private PreparedStatement ps; 
 	private ResultSet rs; 
 
-	public CategoryDAO() throws Exception {
+	public CategoryDAO() {
+	}
+	
+	private void openConnection() {
+		conn = ConnectionFactory.getConnection();
+	}
+	
+	public List<Category> findAll() {
+		List<Category> categoryList = new ArrayList<>();
+		Category category = new Category();
+
 		try {
-			this.conn = ConnectionFactory.getConnection();
+			openConnection();
+			ps = conn.prepareStatement("SELECT * FROM category_table");
+			rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				category = CategoryBuilder.builder()
+						.id(rs.getInt("category_code"))
+						.name(rs.getString("category_name"))
+						.image(rs.getString("category_image")).build();
+				
+				category.setToys(getToysByCategoryId(category.getId()));
+				categoryList.add(category);	
+			}
+			
+			return categoryList;
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - tente novamente mais tarde.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - tente novamente mais tarde.");
+			throw new DatabaseException(RuntimeErrorEnum.ERR0003);
+		}  finally {
+			ConnectionFactory.closeConnection(conn, ps, rs);
 		}
 	}
 	
-	public Category getOneCategory(Category category) throws Exception {
+	public Category findById(Integer categoryId) {
+		Category category = new Category();
+
 		try {
+			openConnection();
 			ps = conn.prepareStatement("SELECT * FROM category_table WHERE category_code = ?");
-			ps.setInt(1, category.getCategoryCode());
+			ps.setInt(1, categoryId);
 			rs = ps.executeQuery();
-			boolean categoryStatus = false;
-			ToyCategoryDAO tcd = new ToyCategoryDAO();
 			
-			while (rs.next()) {
-				int categorycode = rs.getInt("category_code");
-				String categoryName = rs.getString("category_name");
-				String categoryImage = rs.getString("category_image");
-				category = new Category(categorycode, categoryName, categoryImage, tcd.getAllToyByCategory(category));
-				categoryStatus = true;
-			}
+			if (rs.next()) 
+				category = CategoryBuilder.builder()
+						.id(rs.getInt("category_code"))
+						.name(rs.getString("category_name"))
+						.image(rs.getString("category_image")).build();
 			
-			if (!categoryStatus) {
-				return null;
-			}
+				category.setToys(getToysByCategoryId(category.getId()));
 			
 			return category;
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível encontrar a categoria.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível encontrar a categoria.");
+			throw new DatabaseException(RuntimeErrorEnum.ERR0003);
 		} finally {
 			ConnectionFactory.closeConnection(conn, ps, rs);
 		}
 	}
 	
-	public List<Category> getAllCategoryWithToy(boolean yes) throws Exception {
+	public List<Toy> getToysByCategoryId(Integer categoryId) {
+		List<Toy> toys = new ArrayList<>();
+		
 		try {
-			ps = conn.prepareStatement("SELECT * FROM category_table");
-			rs = ps.executeQuery();
-			List<Category> list = new ArrayList<>();
-			ToyCategoryDAO tcd = new ToyCategoryDAO();
-			boolean categoryStatus = false;
-
+			String querySql = "SELECT DISTINCT t.toy_code, t.toy_image, t.toy_name, t.toy_brand, t.toy_price, t.toy_description, t.toy_details "
+					     + "FROM toy_table t " 
+				       	 + "INNER JOIN toy_category tc ON tc.toy_code_fk = t.toy_code "
+					     + "INNER JOIN category_table c ON tc.category_code_fk = ?";
+			
+			PreparedStatement ps = conn.prepareStatement(querySql);
+			ps.setInt(1, categoryId);
+			ResultSet rs = ps.executeQuery();
+			
 			while (rs.next()) {
-				int categoryCode = rs.getInt("category_code");
-				String categoryName = rs.getString("category_name");
-				String categoryImage = rs.getString("category_image");
-				Category category = new Category(rs.getInt("category_code"));
-				if (yes) {
-					list.add(new Category(categoryCode, categoryName, categoryImage, tcd.getAllToyByCategory(category)));
-				} else {
-					list.add(new Category(categoryCode, categoryName, categoryImage));
-
-				}
-				categoryStatus = true;
+				Toy toy = ToyBuilder.builder()
+						.id(rs.getInt("toy_code"))
+						.image(rs.getString("toy_image"))
+						.name(rs.getString("toy_name"))
+						.brand(rs.getString("toy_brand"))
+						.price(rs.getBigDecimal("toy_price"))
+						.description(rs.getString("toy_description"))
+						.details(rs.getString("toy_details")).build();
+				toys.add(toy);
 			}
 			
-			if (!categoryStatus) {
-				return null;
-			}
-			
-			return list;
+			return toys; 	
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível encontrar as categorias.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível encontrar as categorias.");
+			throw new DatabaseException(RuntimeErrorEnum.ERR0003);
 		} finally {
-			ConnectionFactory.closeConnection(conn, ps, rs);
+			//ConnectionFactory.closeConnection(null, ps, rs);
 		}
 	}
 
-	public Boolean insertCategory(Category category) throws Exception {
-		if (category == null)
-			throw new Exception("The value don't can be null");
-		try {
-			String SQL = "INSERT INTO category_table (category_name, category_image) VALUES (?, ?)";
-			ps = conn.prepareStatement(SQL);
-			
-			ps.setString(1, category.getCategoryName());
-			ps.setString(2, category.getCategoryImage());
+	public void insert(Category category) {
+		try {			
+			openConnection();
+			ps = conn.prepareStatement("INSERT INTO category_table (category_name, category_image) VALUES (?, ?)");	
+			ps.setString(1, category.getName());
+			ps.setString(2, category.getImage());
 
-	
-			if (ps.executeUpdate() > 0) {
-				return true;
-			} else {
-				return false;
-			} 
+			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível inserir a categoria.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível inserir a categoria.");
+			throw new DatabaseException(RuntimeErrorEnum.ERR0004);
 		} finally {
 			ConnectionFactory.closeConnection(conn, ps);
 		}
 	}
 	
-	public Boolean updateCategory(Category category) throws Exception {
-		if (category == null) {
-			throw new Exception("The value don't can be null");
-		}
-		try {
-			String SQL = "UPDATE category_table SET category_name = ?, category_image = ? WHERE category_code = ?";
-			ps = conn.prepareStatement(SQL);
-			
-			ps.setString(1, category.getCategoryName());
-			ps.setString(2, category.getCategoryImage());
-			ps.setInt(3, category.getCategoryCode());
+	public void update(Integer categoryId, Category category) {
+		try {			
+			openConnection();
+			ps = conn.prepareStatement("UPDATE category_table SET category_name = ?, category_image = ? WHERE category_code = ?");
+			ps.setString(1, category.getName());
+			ps.setString(2, category.getImage());
+			ps.setInt(3, categoryId);
 				
-			if (ps.executeUpdate() > 0) {
-				return true;
-			} else {
-				return false;
-			} 
+			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível atualizar a categoria.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível atualizar a categoria.");
+			throw new DatabaseException(RuntimeErrorEnum.ERR0005);
 		} finally {
 			ConnectionFactory.closeConnection(conn, ps);
 		}
 	}
 	
-	public Boolean deleteCategory(Category category) throws Exception {
+	public void delete(Integer categoryId) {
+		ToyDAO toyDAO = new ToyDAO();
 		try {		
-			ToyCategoryDAO toyCategoryDAO = new ToyCategoryDAO();
+			openConnection();
+
 			boolean status = false;
-			List<ToyCategory> list = toyCategoryDAO.getAllToyCategory();
-			for (ToyCategory tc : list) {
-				if (tc.getCategoryCode() == category.getCategoryCode()) {
+			for (ToyCategory toyCategoryRegisters : findAllToyCategoryRegisters()) {
+				if (toyCategoryRegisters.getCategoryId() == categoryId) {
 					status = true;
 					break;
 				}
 			}
 			
-			if (status) {
-				toyCategoryDAO = new ToyCategoryDAO();
-				if (!toyCategoryDAO.toyCategoryDelete(category)) throw new SQLException("SQL error");
-
-				if (!toyCategoryDAO.deleteEspecifyToy(category)) throw new SQLException("SQL error");
+			if (status) {	
+				ps = conn.prepareStatement("DELETE FROM toy_category WHERE category_code_fk = ?");
+				ps.setInt(1, categoryId);
+				ps.executeUpdate();
+				
+				for (Toy toy : toyDAO.findAll()) 
+					if (toy.getCategories().size() == 0) 
+						toyDAO.delete(toy.getId());
 			}
 			
-			String SQL = "DELETE FROM category_table WHERE category_code = ?";
-			ps = conn.prepareStatement(SQL);
-			ps.setInt(1, category.getCategoryCode());
-			
-			if (ps.executeUpdate() > 0) {
-				return true;
-			} else {
-				return false;
-			}
+			ps = conn.prepareStatement("DELETE FROM category_table WHERE category_code = ?");
+			ps.setInt(1, categoryId);
+			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new SQLException("Erro no banco de dados - Não foi possível deletar a categoria.");
-		} catch (Exception e) {
-			throw new Exception("Erro inesperado - Não foi possível deletar a categoria.");
+			throw new DatabaseException(RuntimeErrorEnum.ERR0006);
 		} finally {
 			ConnectionFactory.closeConnection(conn, ps);
 		}
 	}
 	
-	
+	public List<ToyCategory> findAllToyCategoryRegisters() {
+		List<ToyCategory> listToyCategoryRegisters = new ArrayList<>();
+
+		try {
+			openConnection();
+			ps = conn.prepareStatement("SELECT * FROM toy_category");
+			rs = ps.executeQuery();
+
+			while (rs.next()) 
+				listToyCategoryRegisters.add(new ToyCategory(rs.getInt("toy_code_fk"), rs.getInt("category_code_fk")));
+			
+			return listToyCategoryRegisters;
+		} catch (SQLException e) {
+			throw new DatabaseException(RuntimeErrorEnum.ERR0003);
+		}  finally {
+			ConnectionFactory.closeConnection(conn, ps, rs);
+		}
+	}
 }

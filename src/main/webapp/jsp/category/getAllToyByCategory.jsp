@@ -55,7 +55,7 @@
 	<% Category category = (Category) request.getAttribute("category"); %>
     
         <div class="title-container">
-        <h1 class="title"><%= category.getCategoryName() %></h1>
+        <h1 class="title"><%= category.getName() %></h1>
         <div class="title-line" align="center" ></div>
     </div>
 
@@ -63,13 +63,13 @@
         <div class="row">
 		<%
 		String message = (String) request.getAttribute("message");
-		for (Toy toy : category.getCategoryToys()) {
+		for (Toy toy : category.getToys()) {
 		%>
             <div class="card">
-                <a href="ToyController?action=getOneToy&toy_code=<%= toy.getToyCode() %>">
-                	<img src="<%= toy.getToyImage() %>" alt="Image" title="Ver mais sobre <%= toy.getToyName() %>"></a>
-                <h4><%= toy.getToyName() %></h4>
-                <p>R$<%= toy.getToyPrice() %></p>
+                <a href="ToyController?action=getOneToy&toy_code=<%= toy.getId() %>">
+                	<img src="<%= toy.getImage() %>" alt="Image" title="Ver mais sobre <%= toy.getName() %>"></a>
+                <h4><%= toy.getName() %></h4>
+                <p>R$<%= toy.getPrice() %></p>
             </div>
         <%
 		}

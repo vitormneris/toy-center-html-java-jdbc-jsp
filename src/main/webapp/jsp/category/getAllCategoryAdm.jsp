@@ -83,12 +83,12 @@
 					    <% 
 					  			} 
 					    %>
-								<td><%= category.getCategoryCode() %></td>
-								<td class="toy-compact-cell" ><%= category.getCategoryName() %></td>
-								<td><img src="<%= category.getCategoryImage() %>" width="100px" height="100px"></td>
+								<td><%= category.getId() %></td>
+								<td class="toy-compact-cell" ><%= category.getName() %></td>
+								<td><img src="<%= category.getImage() %>" width="100px" height="100px"></td>
 								<td class="controls">
-									<a class="linkDelete" onclick="deleteCategory(<%= category.getCategoryCode() %>)">Deletar</a>
-								    <a class="linkEdit" href="CategoryController?action=updateCategory&category_code=<%= category.getCategoryCode() %>">Atualizar</a>
+									<a class="linkDelete" onclick="deleteCategory(<%= category.getId() %>)">Deletar</a>
+								    <a class="linkEdit" href="CategoryController?action=updateCategory&category_code=<%= category.getId() %>">Atualizar</a>
 								</td>
 							</tr>
 						<%

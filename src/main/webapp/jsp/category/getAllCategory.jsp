@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+s<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.List"%>
 <%@ page import="br.edu.toycenter.model.Category"%>
@@ -66,9 +66,9 @@
 			for (Category category : categoryList) {
 			%>
 				<div class="cardCategory">
-					<a class="centralize" href="CategoryController?action=getOneCategory&category_code=<%= category.getCategoryCode() %>">
-	                <img src="<%= category.getCategoryImage() %>" alt=""></a>
-	                <h4 class="centralize"><%= category.getCategoryName() %></h4>
+					<a class="centralize" href="CategoryController?action=getOneCategory&category_code=<%= category.getId() %>">
+	                <img src="<%= category.getImage() %>" alt=""></a>
+	                <h4 class="centralize"><%= category.getName() %></h4>
 	            </div>
 		<%
 			}

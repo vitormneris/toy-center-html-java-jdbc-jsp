@@ -68,35 +68,35 @@
             <div class="fieldsetBox">
                 <label for="code_ET">Code</label>
                 <input type="number" placeholder="Digite o Código do Brinquedo" readonly="readonly" name="toy_code" id="code_ET" 
-                	value="<%=toy.getToyCode()%>">
+                	value="<%=toy.getId()%>">
             </div>
 
             <div class="fieldsetBox">
                 <label for="name_ET">Nome</label>
-                <input type="text" placeholder="Digite o Novo Nome do Brinquedo" name="toy_name" id="name_ET" value="<%=toy.getToyName()%>">
+                <input type="text" placeholder="Digite o Novo Nome do Brinquedo" name="toy_name" id="name_ET" value="<%=toy.getName()%>">
             </div>
             
             <div class="fieldsetBox">
             <label for="brand_ET">Marca</label>
-            <input type="text" placeholder="" name="toy_brand" id="brand_ET" value="<%=toy.getToyBrand()%>">
+            <input type="text" placeholder="" name="toy_brand" id="brand_ET" value="<%=toy.getBrand()%>">
             </div>
 
             <div class="fieldsetBox">
             <label for="description_ET">Descrição</label>
             <input type="text" placeholder="Digite a Nova Descrição do Brinquedo" name="toy_description" id="description_ET" 
-            	value="<%=toy.getToyDescription()%>">
+            	value="<%=toy.getDescription()%>">
             </div>
             
             <div class="fieldsetImageBox">
             <label for="file_ET">Imagem</label>
             <input type="file" name="toy_image" id="file_ET">
-            <img class="img_show" src="<%=toy.getToyImage()%>" width="400px" height="400px">
+            <img class="img_show" src="<%=toy.getImage()%>" width="400px" height="400px">
             </div>
 
             <div class="fieldsetPriceBox">
             <label for="price_ET">Valor R$:</label>
             <input type="number" placeholder="Digite o Valor" min="0" step="0.01" class="price_et" name="toy_price"
-            	 id="price_ET" value="<%=toy.getToyPrice()%>">
+            	 id="price_ET" value="<%=toy.getPrice()%>">
             </div>
 
 
@@ -105,16 +105,16 @@
                     <p class="categoryLabel">Categorias:</p>
                     <select name="toy_categories" id="categorias" multiple>
                     <%
-                    List<Category> list = (ArrayList) request.getAttribute("categoryList");
+                    List<Category> categoryList = (ArrayList<Category>) request.getAttribute("categoryList");
                     String message = (String) request.getAttribute("message");
                     String message1 = (String) request.getAttribute("message1");
 
-                    for (Category category : list) {
+                    for (Category category : categoryList) {
                         boolean status = false;
-                        for (Category toyCategory : toy.getToyCategories()) {
-                            if (category.getCategoryCode() == toyCategory.getCategoryCode()) {
+                        for (Category toyCategory : toy.getCategories()) {
+                            if (category.getId() == toyCategory.getId()) {
                     %>
-                               <option value="<%= category.getCategoryCode() %>" selected><%= category.getCategoryName() %></option>
+                               <option value="<%= category.getId() %>" selected><%= category.getName() %></option>
                     <%
                                 status = true;
                                 break;
@@ -122,7 +122,7 @@
                         }
                         if (!status) {
                     %>
-                               <option value="<%= category.getCategoryCode() %>"><%= category.getCategoryName() %></option>
+                               <option value="<%= category.getId() %>"><%= category.getName() %></option>
                     <%
                         }
                     }
@@ -135,7 +135,7 @@
 			
 			<div class="fieldsetBox">
 			<label for="details_NT">Detalhes</label>			
-			<textarea class="detailsBox" maxlength="1080" placeholder="Escreva os Detalhes do Brinquedo" name="toy_details"  id="details_NT"><%=toy.getToyDetails()%></textarea>
+			<textarea class="detailsBox" maxlength="1080" placeholder="Escreva os Detalhes do Brinquedo" name="toy_details"  id="details_NT"><%=toy.getDetails()%></textarea>
 			</div>
 
 			<div class="fieldsetNT_btn">

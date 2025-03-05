@@ -1,38 +1,30 @@
 package br.edu.toycenter.model;
 
 public class ToyCategory {
-	private int toyCode;
-	private int categoryCode;
+	private Integer toyId;
+	private Integer categoryId;
 	
-
 	public ToyCategory() {
-		super();
+	}
+		
+	public ToyCategory(Integer toyId, Integer categoryId) {
+		this.toyId = toyId;
+		this.categoryId = categoryId;
 	}
 
-	public ToyCategory(int toyCode, int categoryCode) {
-		super();
-		this.toyCode = toyCode;
-		this.categoryCode = categoryCode;
+	public Integer getToyId() {
+		return toyId;
 	}
-
-	public int getToyCode() {
-		return toyCode;
+	
+	public void setToyId(Integer toyId) {
+		this.toyId = toyId;
 	}
-
-	public void setToyCode(int toyCode) {
-		this.toyCode = toyCode;
+	
+	public Integer getCategoryId() {
+		return categoryId;
 	}
-
-	public int getCategoryCode() {
-		return categoryCode;
-	}
-
-	public void setCategoryCode(int categoryCode) {
-		this.categoryCode = categoryCode;
-	}
-
-	@Override
-	public String toString() {
-		return "Category [toyCode=" + toyCode + ", categoryCode=" + categoryCode + "]";
+	
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
 	}
 }

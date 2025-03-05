@@ -90,26 +90,26 @@
 							<%
 									}
 							%>
-								<td><%=toy.getToyCode()%></td>
+								<td><%=toy.getId()%></td>
 								<td><a
-									href="ToyController?action=getOneToy&toy_code=<%=toy.getToyCode()%>">
-										<img src="<%=toy.getToyImage()%>" width="100px" height="100px">
+									href="ToyController?action=getOneToy&toy_code=<%=toy.getId()%>">
+										<img src="<%=toy.getImage()%>" width="100px" height="100px">
 								</a></td>
-								<td class="toy-compact-cell"><%=toy.getToyName()%></td>
+								<td class="toy-compact-cell"><%=toy.getName()%></td>
 								<td class="toy-compact-cell">
 									<%
-									for (Category category : toy.getToyCategories()) {
-										out.print(category.getCategoryName());
+									for (Category category : toy.getCategories()) {
+										out.print(category.getName());
 									%> <br> <%
 									 }
 									 %>
 								</td>
-								<td class="toy-compact-cell"><%=toy.getToyBrand()%></td>
-								<td><%=toy.getToyPrice()%></td>
-								<td class="toy-compact-cell"><%=toy.getToyDescription()%></td>
-								<td class="toy-compact-cell"><%=toy.getToyDetails()%></td>
-								<td class="controls"><a class="linkDelete" onclick="deleteToy(<%= toy.getToyCode()%>)">Deletar</a> 
-								<a class="linkEdit" href="ToyController?action=updateToy&toy_code=<%=toy.getToyCode()%>">Atualizar</a>
+								<td class="toy-compact-cell"><%=toy.getBrand()%></td>
+								<td><%=toy.getPrice()%></td>
+								<td class="toy-compact-cell"><%=toy.getDescription()%></td>
+								<td class="toy-compact-cell"><%=toy.getDetails()%></td>
+								<td class="controls"><a class="linkDelete" onclick="deleteToy(<%= toy.getId()%>)">Deletar</a> 
+								<a class="linkEdit" href="ToyController?action=updateToy&toy_code=<%=toy.getId()%>">Atualizar</a>
 								</td>
 							</tr>
 

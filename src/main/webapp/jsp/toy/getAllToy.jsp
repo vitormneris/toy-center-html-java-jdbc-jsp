@@ -54,15 +54,15 @@
 
     
     <%
-        List<Toy> list = (ArrayList) request.getAttribute("toyList");
+        List<Toy> toyList = (ArrayList) request.getAttribute("toyList");
         boolean show = false;
         int codeCat = 0;
-        if (list != null) {
-        	for (Toy toy : list) {
-        		for (Category category : toy.getToyCategories()) {
-        	if (category.getCategoryName().equals("Hot Wheels")) {
+        if (toyList != null) {
+        	for (Toy toy : toyList) {
+        		for (Category category : toy.getCategories()) {
+        	if (category.getName().equals("Hot Wheels")) {
         		show = true;
-        		codeCat = category.getCategoryCode();
+        		codeCat = category.getId();
         	}
         		}
         	}
@@ -87,14 +87,14 @@
         <div class="row">
         <%
         boolean cmf = false; 
-		if (list != null) {
-			for (Toy toy : list) {
+		if (toyList != null) {
+			for (Toy toy : toyList) {
 	    %>
 	            <div class="card">
-	                <a class="centralize" href="ToyController?action=getOneToy&toy_code=<%= toy.getToyCode() %>">
-	                	<img src="<%= toy.getToyImage() %>" alt="Image" title="Ver mais sobre <%= toy.getToyName() %>"></a>
-	                <h4><%= toy.getToyName() %></h4>
-	                <p>R$<%= toy.getToyPrice() %></p>
+	                <a class="centralize" href="ToyController?action=getOneToy&toy_code=<%= toy.getId() %>">
+	                	<img src="<%= toy.getImage() %>" alt="Image" title="Ver mais sobre <%= toy.getName() %>"></a>
+	                <h4><%= toy.getName() %></h4>
+	                <p>R$<%= toy.getPrice() %></p>
 	            </div>
 	    <%
 			}
@@ -121,17 +121,17 @@
     <div class="cards-container">
         <div class="row">
         <%
-		if (list != null) {
+		if (toyList != null) {
 
-			for (Toy toy : list) {
-				for (Category category : toy.getToyCategories()) {
-					if (category.getCategoryName().equals("Instrumentos Musicais")) {
+			for (Toy toy : toyList) {
+				for (Category category : toy.getCategories()) {
+					if (category.getName().equals("Instrumentos Musicais")) {
 		%>
 	            <div class="card">
-	                <a href="ToyController?action=getOneToy&toy_code=<%= toy.getToyCode() %>">
-	                	<img src="<%= toy.getToyImage() %>" alt="Image" title="Ver mais sobre <%= toy.getToyName() %>"></a>
-	                <h4><%= toy.getToyName() %></h4>
-	                <p>R$<%= toy.getToyPrice() %></p>
+	                <a href="ToyController?action=getOneToy&toy_code=<%= toy.getId() %>">
+	                	<img src="<%= toy.getImage() %>" alt="Image" title="Ver mais sobre <%= toy.getName() %>"></a>
+	                <h4><%= toy.getName() %></h4>
+	                <p>R$<%= toy.getPrice() %></p>
 	            </div>
         <%
 					}

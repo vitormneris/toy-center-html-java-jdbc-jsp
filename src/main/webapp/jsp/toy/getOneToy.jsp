@@ -58,16 +58,16 @@
 		<div class="toyContent">
 			<div class="toyInfo">
 
-				<img src="<%= toy.getToyImage() %>" alt="">
-				<h3 class="brand"><%= toy.getToyBrand() %></h3>
+				<img src="<%= toy.getImage() %>" alt="">
+				<h3 class="brand"><%= toy.getBrand() %></h3>
 				<div class="align">
-				<h2 class="name"><%= toy.getToyName() %></h2>
-				<p class="price">R$<%= toy.getToyPrice() %></p>
+				<h2 class="name"><%= toy.getName() %></h2>
+				<p class="price">R$<%= toy.getPrice() %></p>
 				<button class="buy">Comprar</button>
 				</div>
 
-				<p class="description"><%= toy.getToyDescription() %></p>
-				<p class="details"><%= toy.getToyDetails() %></p>
+				<p class="description"><%= toy.getDescription() %></p>
+				<p class="details"><%= toy.getDetails() %></p>
 
 			</div>
 		</div>

@@ -61,9 +61,9 @@
 	<main id="Main_ContentNT" class="Container_NewToy">
 	
 		<%
-		List<Category> list = (ArrayList) request.getAttribute("categoryList");
+		List<Category> categoryList = (ArrayList<Category>) request.getAttribute("categoryList");
 		String message = (String) request.getParameter("message1");
-		if (list != null) {
+		if (categoryList != null) {
 		%>
 		<form id="Content_NewToy" action="ToyController" method="POST"
 			enctype="multipart/form-data">
@@ -108,9 +108,9 @@
 			    <label class="categoryLabel">Categorias:</label>
 			    <select name="toy_categories" id="categorias" multiple>
 			    <%
-			    	for (Category category : list) {
+			    	for (Category category : categoryList) {
 			    %>
-			    	<option value="<%=category.getCategoryCode()%>"> <%=category.getCategoryName()%></option>
+			    	<option value="<%=category.getId()%>"> <%=category.getName()%></option>
 			    <%
 			    }
 			    %>
